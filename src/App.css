@@ -1,0 +1,24 @@
+body {
+  /* background: linear-gradient(0.25turn, #3f87a6, #ebf8e1, #fc9e39); */
+    /* background: linear-gradient(0.25turn, #3b8caf, #99cc71,#3b8caf); */
+  /* background: linear-gradient(0.25turn, #4fc4df, #99cc7e); */
+  /* background: linear-gradient(0.50turn, #be68a9,#47adc7,#be68a9); */
+  background: rgb(223, 215, 218);
+  background: radial-gradient(circle, rgba(223, 215, 218) 3%, #aaafb4 41%);
+}
+
+.App {
+  text-align: center;
+}
+.center {
+  display:flex;
+  justify-content:center;
+
+}
+.particles {
+  position: fixed;
+  top: 0;
+  right:0;
+  bottom:0;
+  z-index:-1
+}
