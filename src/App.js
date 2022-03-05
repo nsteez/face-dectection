@@ -6,10 +6,32 @@ import ImageLinkForm from './components/ImageLinkForm';
 import Rank from './components/Rank';
 //import FaceRecognition from './components/FaceRecognition';
 import Particles from 'react-tsparticles';
+//import Particles from 'react-parallax-tilt';
+
 
 
 const particleOptions = {
+//   Particles: {
+//     number:{
+//     value:30,
+//     density:{
+//       enable:true,
+//       value:800
 
+//     }
+//   }
+//  }
+// }
+
+//<Particles
+      //id="tsparticles"
+
+      //options={{
+        // background: {
+        //   color: {
+        //     value: "#0d47a1",
+        //   },
+        //},
         fpsLimit: 30,
         interactivity: {
           events: {
@@ -58,7 +80,7 @@ const particleOptions = {
             enable: true,
             outMode: "bounce",
             random: false,
-            speed: 2,
+            speed: .8,
             straight: false,
           },
           number: {
@@ -83,6 +105,20 @@ const particleOptions = {
 }
 //>
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      input: "",
+    }
+  }
+
+  onInputChange = (event) => {
+    console.log(event.target.value);
+  }
+  onButtonSubmit = () => {
+    console.log('click');
+  }
+
   render(){
   return (
     <div className="App">
@@ -91,7 +127,7 @@ class App extends Component {
       <Navigation />
       <Logo />
       <Rank />
-      <ImageLinkForm />
+      <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
       {/* <FaceRecognition /> */}
     </div>
   );
