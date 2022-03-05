@@ -9,7 +9,7 @@ const Logo = () => {
         <Tilt className="Tilt br2 shadow-2" option={{max:55}}style={{ height: 150, width: 150}} >
         <div className='Tilt-inner'>
         <img style={{width:"150px", height:"150px"}} alt="Logo"
-            src={`../images/stockphoto2.png`} />
+            src={`../images/face.jpg`} />
 
         </div>
        </Tilt>

@@ -9,27 +9,7 @@ import Particles from 'react-tsparticles';
 
 
 const particleOptions = {
-//   Particles: {
-//     number:{
-//     value:30,
-//     density:{
-//       enable:true,
-//       value:800
 
-//     }
-//   }
-//  }
-// }
-
-//<Particles
-      //id="tsparticles"
-
-      //options={{
-        // background: {
-        //   color: {
-        //     value: "#0d47a1",
-        //   },
-        //},
         fpsLimit: 30,
         interactivity: {
           events: {
