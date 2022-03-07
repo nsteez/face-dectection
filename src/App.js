@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Clarifai, { COLOR_MODEL } from 'clarifai';
+import Clarifai, { FACE_DETECT_MODEL } from 'clarifai';
 import Navigation from './components/Navigation';
 import Logo from './components/Logo';
 import ImageLinkForm from './components/ImageLinkForm';
@@ -75,28 +75,43 @@ class App extends Component {
     super();
     this.state = {
       input: "",
-      imageUrl: ""
+      imageUrl: "",
+      box: {},
     }
   }
-
+  //https://dictionary.cambridge.org/es/images/thumb/face_noun_002_13169.jpg
   //b4c07066eaa1475a826b1af54b5bcd36
+
+  findFaceLocation = (data)=> {
+    const face = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('inputImage');
+    const width = Number(image.width)
+    const height = Number(image.height);
+    //console.log(width, height)
+    return {
+      leftCol: face.left_col * width,
+      topRow: face.top_row * height,
+      rightCol: width - (face.right_col * width),
+      bottomRow:height -(face.bottom_row *height)
+    }
+  }
+  displayFaceDetect = (box)=> {
+    console.log(box)
+    this.setState({box:box});
+  }
 
   onInputChange = (event) => {
     this.setState({input:event.target.value})
     //console.log(event.target.value);
+
   }
   onButtonSubmit = () => {
-    this.setState({imageUrl:this.state.input})
+    this.setState({imageUrl:this.state.input});
     //console.log('click');
-    app.models.predict(Clarifai.FACE_DETECT_MODEL,this.state.input).then(
-      function(response){
-        console.log(response.outputs[0].data.regions[0].region_info.bounding_box)
-      },
-      function(error){
-        console.log("error here")
-
-      }
-    );
+    app.models.predict(Clarifai.FACE_DETECT_MODEL,this.state.input)
+        .then(response => this.displayFaceDetect(this.findFaceLocation(response)))
+        //console.log(response.outputs[0].data.regions[0].region_info.bounding_box)
+        .catch(error => console.log(error));
   }
 
   render(){
@@ -108,7 +123,7 @@ class App extends Component {
       <Logo />
       <Rank />
       <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-      <FaceRecognition imageUrl={this.state.imageUrl}/>
+      <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
     </div>
   );
 }
