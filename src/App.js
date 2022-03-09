@@ -10,8 +10,7 @@ import FaceRecognition from './components/FaceRecognition';
 import Particles from 'react-tsparticles';
 
 const app = new Clarifai.App({
-  //apiKey: "a403429f2ddf4b49b307e318f00e528b"
-    apiKey: "b4c07066eaa1475a826b1af54b5bcd36"
+  apiKey: "a403429f2ddf4b49b307e318f00e528b"
 });
 
 
@@ -79,8 +78,6 @@ class App extends Component {
       box: {},
     }
   }
-  //https://dictionary.cambridge.org/es/images/thumb/face_noun_002_13169.jpg
-  //b4c07066eaa1475a826b1af54b5bcd36
 
   findFaceLocation = (data)=> {
     const face = data.outputs[0].data.regions[0].region_info.bounding_box;
