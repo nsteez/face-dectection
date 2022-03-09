@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import Clarifai, { FACE_DETECT_MODEL } from 'clarifai';
+import Clarifai from 'clarifai';
 import Navigation from './components/Navigation';
+import Signin from './LoginIn/Signin';
+import Register from './LoginIn/Register';
 import Logo from './components/Logo';
 import ImageLinkForm from './components/ImageLinkForm';
 import Rank from './components/Rank';
@@ -10,10 +12,8 @@ import FaceRecognition from './components/FaceRecognition';
 import Particles from 'react-tsparticles';
 
 const app = new Clarifai.App({
-  apiKey: "a403429f2ddf4b49b307e318f00e528b"
+  apiKey: "a123sxrfdtujlolljgfdshjkkkkj"
 });
-
-
 
 const particleOptions = {
         fpsLimit: 30,
@@ -76,6 +76,8 @@ class App extends Component {
       input: "",
       imageUrl: "",
       box: {},
+      page: "login",
+      isSignedIn: false,
     }
   }
 
@@ -110,20 +112,38 @@ class App extends Component {
         //console.log(response.outputs[0].data.regions[0].region_info.bounding_box)
         .catch(error => console.log(error));
   }
+  onPageChange = (page) => {
+    if (page === 'signout') {
+      this.setState({isSignedIn:false})
+    }else if (page === "home"){
+      this.setState({isSignedIn: true})
+    }
+    this.setState({page:page})
+  }
 
-  render(){
-  return (
-    <div className="App">
-       <Particles className='particles'
-        params={particleOptions} />
-      <Navigation />
-      <Logo />
-      <Rank />
-      <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-      <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
-    </div>
-  );
-}
+  render() {
+    const { isSignedIn, imageUrl, page, box } = this.state;
+    return (
+      <div className="App">
+        <Particles className='particles' params={particleOptions} />
+        <Navigation isSignedIn={isSignedIn} onPageChange={this.onPageChange}/>
+        { page === 'home' ?
+          <div>
+          <Logo />
+          <Rank />
+          <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
+          <FaceRecognition box={box} imageUrl={imageUrl}/>
+          </div>
+          : (
+            page === 'login' ?
+            <Signin onPageChange={this.onPageChange}/> : <Register onPageChange={this.onPageChange}/>
+
+
+          )
+        }
+      </div>
+    );
+  }
 }
 
 export default App;
