@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Clarifai from 'clarifai';
+import Clarifai, { FACE_DETECT_MODEL } from 'clarifai';
 import Navigation from './components/Navigation';
 import Signin from './LoginIn/Signin';
 import Register from './LoginIn/Register';
@@ -12,8 +12,10 @@ import FaceRecognition from './components/FaceRecognition';
 import Particles from 'react-tsparticles';
 
 const app = new Clarifai.App({
-  apiKey: "a123sxrfdtujlolljgfdshjkkkkj"
+  apiKey: "abc123"
+
 });
+
 
 const particleOptions = {
         fpsLimit: 30,
@@ -76,9 +78,27 @@ class App extends Component {
       input: "",
       imageUrl: "",
       box: {},
-      page: "login",
+      page: "signin",
       isSignedIn: false,
+      user:{
+        id: '',
+        name:'',
+        email:'',
+        entries:0,
+        dateJoined: new Date()
+      }
     }
+  }
+
+  //update each user profile
+  loadUserData = (data) => {
+    this.setState({user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      dateJoined: data.dateJoined
+  }})
   }
 
   findFaceLocation = (data)=> {
@@ -86,7 +106,7 @@ class App extends Component {
     const image = document.getElementById('inputImage');
     const width = Number(image.width)
     const height = Number(image.height);
-    //console.log(width, height)
+
     return {
       leftCol: face.left_col * width,
       topRow: face.top_row * height,
@@ -101,17 +121,29 @@ class App extends Component {
 
   onInputChange = (event) => {
     this.setState({input:event.target.value})
-    //console.log(event.target.value);
+
 
   }
-  onButtonSubmit = () => {
+  onPictureSubmit = () => {
     this.setState({imageUrl:this.state.input});
     //console.log('click');
     app.models.predict(Clarifai.FACE_DETECT_MODEL,this.state.input)
-        .then(response => this.displayFaceDetect(this.findFaceLocation(response)))
-        //console.log(response.outputs[0].data.regions[0].region_info.bounding_box)
-        .catch(error => console.log(error));
+        .then(response => {
+          if (response){
+            fetch('http://localhost:3000/image',{
+              method:'put',
+              headers: { 'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                id:this.state.user.id
+              })
+            })
+          }
+        this.displayFaceDetect(this.findFaceLocation(response))
+      })
+
+      .catch(error => console.log(error));
   }
+
   onPageChange = (page) => {
     if (page === 'signout') {
       this.setState({isSignedIn:false})
@@ -120,6 +152,36 @@ class App extends Component {
     }
     this.setState({page:page})
   }
+
+
+  onButtonSubmit = () => {
+    this.setState({imageUrl: this.state.input})
+    app.models
+    .predict(
+    Clarifai.FACE_DETECT_MODEL,
+    // THE JPG
+    this.state.input)
+    .then((response) => {
+        if(response) {
+        fetch('http://localhost:3000/image', {
+            method:'put',
+                headers:{ 'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    id:this.state.user.id
+                })
+        })
+        .then(response => response.json())
+        .then(count => {
+            this.setState(Object.assign(this.state.user, { entries: count }))
+            })
+
+        }
+    this.displayFaceDetect(this.findFaceLocation(response));
+    })
+    .catch((err) => {
+    console.log(err);
+    });
+        }
 
   render() {
     const { isSignedIn, imageUrl, page, box } = this.state;
@@ -130,15 +192,14 @@ class App extends Component {
         { page === 'home' ?
           <div>
           <Logo />
-          <Rank />
+          <Rank name={this.state.user.name} entries={this.state.user.entries}/>
           <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
           <FaceRecognition box={box} imageUrl={imageUrl}/>
           </div>
           : (
-            page === 'login' ?
-            <Signin onPageChange={this.onPageChange}/> : <Register onPageChange={this.onPageChange}/>
-
-
+            page === 'signin' ?
+            <Signin loadUserData={this.loadUserData} onPageChange={this.onPageChange}/> :
+             <Register loadUserData={this.loadUserData} onPageChange={this.onPageChange}/>
           )
         }
       </div>
